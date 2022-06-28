@@ -1,0 +1,38 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.vanniktech.maven.publish'
+apply plugin: 'app.cash.paparazzi'
+
+android {
+  resourcePrefix "extendedspans_"
+
+  compileSdkVersion versions.compileSdk
+  defaultConfig.minSdkVersion 21
+
+  buildFeatures {
+    compose = true
+  }
+  composeOptions {
+    kotlinCompilerExtensionVersion = versions.composeUi
+  }
+
+  kotlinOptions {
+    jvmTarget = "11"
+  }
+
+  java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+  }
+
+  lintOptions {
+    abortOnError true
+  }
+}
+
+dependencies {
+  implementation "androidx.compose.ui:ui:$versions.composeUi"
+  implementation "androidx.compose.foundation:foundation:$versions.composeUi"
+
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "androidx.compose.material3:material3:1.0.0-alpha13"
+}
