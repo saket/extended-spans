@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
+import me.saket.extendedspans.internal.fastMapRange
 
 interface ExtendedSpanPainter {
   fun decorate(span: SpanStyle, start: Int, end: Int, text: AnnotatedString.Builder): SpanStyle
@@ -46,7 +47,7 @@ internal fun TextLayoutResult.getBoundingBoxes(
     }
   }
 
-  return (startLineNum..endLineNum).map { lineNum ->
+  return fastMapRange(startLineNum, endLineNum) { lineNum ->
     Rect(
       top = getLineTop(lineNum),
       bottom = getLineBottom(lineNum),

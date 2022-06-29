@@ -29,6 +29,8 @@ import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import me.saket.extendedspans.internal.fastForEach
+import me.saket.extendedspans.internal.fastMapRange
 import kotlin.math.ceil
 import kotlin.math.sin
 import kotlin.time.Duration
@@ -70,13 +72,13 @@ class SquigglyUnderlineSpanPainter(
         pathEffect = PathEffect.cornerPathEffect(radius = wavePeriod.toPx()),
       )
 
-      annotations.forEach { annotation ->
+      annotations.fastForEach { annotation ->
         val boxes = layoutResult.getBoundingBoxes(
           scope = this,
           startOffset = annotation.start,
           endOffset = annotation.end
         )
-        boxes.forEach { box ->
+        boxes.fastForEach { box ->
           path.reset()
           path.buildPathFor(box, density = this)
           drawPath(
@@ -101,7 +103,7 @@ class SquigglyUnderlineSpanPainter(
     val amountPoints = ceil((lineEnd - lineStart) / segmentWidth).toInt() + 1
 
     var pointX = lineStart
-    (0 until amountPoints).forEach { point ->
+    fastMapRange(0, amountPoints) { point ->
       val proportionOfPeriod = (pointX - lineStart) / wavePeriod.toPx()
       val radiansX = proportionOfPeriod * TWO_PI + (TWO_PI * animator.animationProgress.value)
       val offsetY = lineBaseline + (sin(radiansX) * amplitude.toPx())

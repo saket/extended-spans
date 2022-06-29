@@ -15,6 +15,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import me.saket.extendedspans.internal.fastForEach
 
 /**
  * Draws rectangle spans with rounded corners.
@@ -48,7 +49,7 @@ class RoundRectSpanPainter(
     return SpanDrawInstructions {
       val cornerRadius = CornerRadius(cornerRadius.toPx())
 
-      annotations.forEach { annotation ->
+      annotations.fastForEach { annotation ->
         val backgroundColor = Color(annotation.item.toInt())
         val boxes = layoutResult.getBoundingBoxes(
           scope = this,
