@@ -31,7 +31,6 @@ abstract class ExtendedSpanPainter {
    * and [endOffset] represent the extreme ends of a paragraph.
    */
   protected fun TextLayoutResult.getBoundingBoxes(
-    scope: DrawScope,
     startOffset: Int,
     endOffset: Int,
     flattenForFullParagraph: Boolean = false
@@ -50,7 +49,7 @@ abstract class ExtendedSpanPainter {
             top = getLineTop(startLineNum),
             bottom = getLineBottom(endLineNum),
             left = 0f,
-            right = scope.size.width
+            right = size.width.toFloat()
           )
         )
       }

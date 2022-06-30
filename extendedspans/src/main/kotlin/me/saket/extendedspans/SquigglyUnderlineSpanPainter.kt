@@ -106,7 +106,6 @@ class SquigglyUnderlineSpanPainter(
 
       annotations.fastForEach { annotation ->
         val boxes = layoutResult.getBoundingBoxes(
-          scope = this,
           startOffset = annotation.start,
           endOffset = annotation.end
         )

@@ -60,7 +60,6 @@ class RoundRectSpanPainter(
       annotations.fastForEach { annotation ->
         val backgroundColor = annotation.item.deserializeToColor()!!
         val boxes = layoutResult.getBoundingBoxes(
-          scope = this,
           startOffset = annotation.start,
           endOffset = annotation.end,
           flattenForFullParagraph = true
