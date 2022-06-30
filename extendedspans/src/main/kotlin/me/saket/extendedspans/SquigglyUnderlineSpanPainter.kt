@@ -47,7 +47,7 @@ class SquigglyUnderlineSpanPainter(
   private val amplitude: TextUnit = 1.sp,
   private val baselineOffset: TextUnit = 1.sp,
   private val animator: SquigglyUnderlineAnimator = SquigglyUnderlineAnimator.NoOp,
-) : ExtendedSpanPainter {
+) : ExtendedSpanPainter() {
   private val path = Path()
 
   override fun decorate(span: SpanStyle, start: Int, end: Int, text: AnnotatedString.Builder): SpanStyle {
@@ -69,7 +69,7 @@ class SquigglyUnderlineSpanPainter(
         width = width.toPx(),
         join = StrokeJoin.Round,
         cap = StrokeCap.Round,
-        pathEffect = PathEffect.cornerPathEffect(radius = wavePeriod.toPx()),
+        pathEffect = PathEffect.cornerPathEffect(radius = wavePeriod.toPx()), // For slightly smoother waves.
       )
 
       annotations.fastForEach { annotation ->

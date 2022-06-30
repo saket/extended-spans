@@ -30,7 +30,7 @@ class RoundRectSpanPainter(
   private val padding: PaddingValues = PaddingValues(2.dp),
   private val topMargin: Dp = 0.dp,
   private val bottomMargin: Dp = 0.dp,
-) : ExtendedSpanPainter {
+) : ExtendedSpanPainter() {
   private val path = Path()
 
   override fun decorate(span: SpanStyle, start: Int, end: Int, text: AnnotatedString.Builder): SpanStyle {
@@ -55,7 +55,7 @@ class RoundRectSpanPainter(
           scope = this,
           startOffset = annotation.start,
           endOffset = annotation.end,
-          autoExpandToFullParagraph = true
+          flattenForFullParagraph = true
         )
         boxes.forEachIndexed { index, box ->
           path.reset()
