@@ -9,10 +9,14 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
+import com.android.internal.R.attr.width
 import org.junit.Rule
 import org.junit.Test
 
@@ -24,22 +28,41 @@ class SquigglyUnderlineSpanPainterTest {
   )
 
   @Composable
-  private fun squigglyPainter() = SquigglyUnderlineSpanPainter(
-    color = Color(0xFFF97BB1),
+  private fun squigglyPainter(
+    color: Color = Color.Unspecified,
+  ) = SquigglyUnderlineSpanPainter(
+    overrideColor = color,
     width = 4.sp,
-    wavePeriod = 20.sp,
+    wavelength = 20.sp,
     amplitude = 2.sp,
-    baselineOffset = 2.sp,
+    bottomOffset = 2.sp,
     animator = SquigglyUnderlineAnimator.NoOp
   )
+
+  @Test fun `override underline color`() {
+    paparazzi.snapshot {
+      ExtendedSpansText(
+        spanPainter = squigglyPainter(Color.Pink),
+        text = buildAnnotatedString {
+          append("Lorem ")
+          underlined(Color.Purple) {
+            append("ipsum dolor")
+          }
+          append(" sit amet, consectetur adipiscing elit, sed do eiusmod tempor.")
+        }
+      )
+    }
+  }
 
   @Test fun `single line`() {
     paparazzi.snapshot {
       ExtendedSpansText(
         spanPainter = squigglyPainter(),
         text = buildAnnotatedString {
-          append("Lorem ")
-          underlined {
+          colored(Color.DarkGray) {
+            append("Lorem ")
+          }
+          underlined(Color.Pink) {
             append("ipsum dolor")
           }
           append(" sit amet, consectetur adipiscing elit, sed do eiusmod tempor.")
@@ -54,7 +77,7 @@ class SquigglyUnderlineSpanPainterTest {
         spanPainter = squigglyPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
-          underlined {
+          underlined(Color.Pink) {
             append("ipsum dolor sit amet,")
           }
           append(" consectetur adipiscing elit, sed do eiusmod tempor.")
@@ -69,7 +92,7 @@ class SquigglyUnderlineSpanPainterTest {
         spanPainter = squigglyPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
-          underlined {
+          underlined(Color.Pink) {
             append("ipsum dolor sit amet, consectetur adipiscing")
           }
           append(" elit, sed do eiusmod tempor.")
@@ -78,7 +101,13 @@ class SquigglyUnderlineSpanPainterTest {
     }
   }
 
-  private fun AnnotatedString.Builder.underlined(block: AnnotatedString.Builder.() -> Unit) = apply {
-    withStyle(SpanStyle(textDecoration = Underline), block)
+  private fun AnnotatedString.Builder.underlined(color: Color, block: AnnotatedString.Builder.() -> Unit) = apply {
+    withStyle(SpanStyle(textDecoration = Underline, color = color), block)
+  }
+  private fun AnnotatedString.Builder.colored(color: Color, block: AnnotatedString.Builder.() -> Unit) = apply {
+    withStyle(SpanStyle(color = color), block)
   }
 }
+
+val Color.Companion.Pink get() = Color(0xFFFF0080)
+val Color.Companion.Purple get() = Color(0xFF9200FF)

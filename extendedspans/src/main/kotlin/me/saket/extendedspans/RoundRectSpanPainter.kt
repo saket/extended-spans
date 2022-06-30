@@ -9,16 +9,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import me.saket.extendedspans.internal.deserializeToColor
 import me.saket.extendedspans.internal.fastForEach
+import me.saket.extendedspans.internal.serialize
 
 /**
- * Draws rectangle spans with rounded corners.
+ * Draws round rectangles behind text annotated using `SpanStyle(background = …)`.
  *
  * [topMargin] and [bottomMargin] are placeholder values that will be automatically calculated from font metrics
  * in the future once Compose UI starts exposing them ([Issue tracker](https://issuetracker.google.com/u/1/issues/237428541)).
@@ -33,11 +35,17 @@ class RoundRectSpanPainter(
 ) : ExtendedSpanPainter() {
   private val path = Path()
 
-  override fun decorate(span: SpanStyle, start: Int, end: Int, text: AnnotatedString.Builder): SpanStyle {
-    return if (span.background == Color.Unspecified) {
+  override fun decorate(
+    span: SpanStyle,
+    start: Int,
+    end: Int,
+    text: AnnotatedString,
+    builder: AnnotatedString.Builder
+  ): SpanStyle {
+    return if (span.background.isUnspecified) {
       span
     } else {
-      text.addStringAnnotation(TAG, annotation = "${span.background.toArgb()}", start = start, end = end)
+      builder.addStringAnnotation(TAG, annotation = span.background.serialize(), start = start, end = end)
       span.copy(background = Color.Unspecified)
     }
   }
@@ -50,7 +58,7 @@ class RoundRectSpanPainter(
       val cornerRadius = CornerRadius(cornerRadius.toPx())
 
       annotations.fastForEach { annotation ->
-        val backgroundColor = Color(annotation.item.toInt())
+        val backgroundColor = annotation.item.deserializeToColor()!!
         val boxes = layoutResult.getBoundingBoxes(
           scope = this,
           startOffset = annotation.start,

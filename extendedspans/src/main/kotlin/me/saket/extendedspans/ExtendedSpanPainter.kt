@@ -8,8 +8,21 @@ import androidx.compose.ui.text.TextLayoutResult
 import me.saket.extendedspans.internal.fastMapRange
 
 abstract class ExtendedSpanPainter {
-  abstract fun decorate(span: SpanStyle, start: Int, end: Int, text: AnnotatedString.Builder): SpanStyle
-  abstract fun drawInstructionsFor(layoutResult: TextLayoutResult): SpanDrawInstructions
+
+  /**
+   * Used for removing any existing spans from [text] so that they can be drawn manually.
+   */
+  abstract fun decorate(
+    span: SpanStyle,
+    start: Int,
+    end: Int,
+    text: AnnotatedString,
+    builder: AnnotatedString.Builder
+  ): SpanStyle
+
+  abstract fun drawInstructionsFor(
+    layoutResult: TextLayoutResult
+  ): SpanDrawInstructions
 
   /**
    * When [flattenForFullParagraph] is available, the bounds for the

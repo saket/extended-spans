@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.isSpecified
+import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
@@ -29,33 +31,67 @@ import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import me.saket.extendedspans.internal.deserializeToColor
+import me.saket.extendedspans.internal.fastFirstOrNull
 import me.saket.extendedspans.internal.fastForEach
 import me.saket.extendedspans.internal.fastMapRange
+import me.saket.extendedspans.internal.serialize
 import kotlin.math.ceil
 import kotlin.math.sin
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * TODO: draw ASCII art
+ * Draws squiggly underlines below text annotated using `SpanStyle(textDecoration = Underline)`.
+ * Inspired from Sam Ruston's BuzzKill app.
+ *
+ * ```
+ *
+ *       _....._                                     _....._         ▲
+ *    ,="       "=.                               ,="       "=.   amplitude
+ *  ,"             ".                           ,"             ".    │
+ *,"                 ".,                     ,,"                 "., ▼
+ *""""""""""|""""""""""|."""""""""|""""""""".|""""""""""|""""""""""|
+ *                       ".               ."
+ *                         "._         _,"
+ *                            "-.....-"
+ *◀───────── Wavelength ─────────▶
+ *
+ * ```
+ *
+ * @param overrideColor Color to use for drawing underlines. When unspecified, the text color is used.
  * @param animator See [rememberSquigglyUnderlineAnimator].
+ * @param bottomOffset Distance from a line's bottom coordinate.
  */
 class SquigglyUnderlineSpanPainter(
-  private val color: Color,
+  private val overrideColor: Color = Color.Unspecified,
   private val width: TextUnit = 2.sp,
-  private val wavePeriod: TextUnit = 9.sp,
+  private val wavelength: TextUnit = 9.sp,
   private val amplitude: TextUnit = 1.sp,
-  private val baselineOffset: TextUnit = 1.sp,
+  private val bottomOffset: TextUnit = 1.sp,
   private val animator: SquigglyUnderlineAnimator = SquigglyUnderlineAnimator.NoOp,
 ) : ExtendedSpanPainter() {
   private val path = Path()
 
-  override fun decorate(span: SpanStyle, start: Int, end: Int, text: AnnotatedString.Builder): SpanStyle {
+  override fun decorate(
+    span: SpanStyle,
+    start: Int,
+    end: Int,
+    text: AnnotatedString,
+    builder: AnnotatedString.Builder
+  ): SpanStyle {
     val textDecoration = span.textDecoration
     return if (textDecoration == null || Underline !in textDecoration) {
       span
     } else {
-      text.addStringAnnotation(TAG, annotation = "ignored", start = start, end = end)
+      val textColor = overrideColor.takeOrElse {
+        text.spanStyles.fastFirstOrNull {
+          // I don't think this predicate will work for text annotated with overlapping
+          // multiple colors, but I'm not too interested in solving for that use case.
+          it.start <= start && it.end >= end && it.item.color.isSpecified
+        }?.item?.color ?: Color.Unspecified
+      }
+      builder.addStringAnnotation(TAG, annotation = textColor.serialize(), start = start, end = end)
       span.copy(textDecoration = if (LineThrough in textDecoration) LineThrough else None)
     }
   }
@@ -69,7 +105,7 @@ class SquigglyUnderlineSpanPainter(
         width = width.toPx(),
         join = StrokeJoin.Round,
         cap = StrokeCap.Round,
-        pathEffect = PathEffect.cornerPathEffect(radius = wavePeriod.toPx()), // For slightly smoother waves.
+        pathEffect = PathEffect.cornerPathEffect(radius = wavelength.toPx()), // For slightly smoother waves.
       )
 
       annotations.fastForEach { annotation ->
@@ -78,12 +114,13 @@ class SquigglyUnderlineSpanPainter(
           startOffset = annotation.start,
           endOffset = annotation.end
         )
+        val textColor = annotation.item.deserializeToColor() ?: layoutResult.layoutInput.style.color
         boxes.fastForEach { box ->
           path.reset()
           path.buildPathFor(box, density = this)
           drawPath(
             path = path,
-            color = color,
+            color = textColor,
             style = pathStyle
           )
         }
@@ -97,16 +134,16 @@ class SquigglyUnderlineSpanPainter(
   private fun Path.buildPathFor(box: Rect, density: Density) = density.run {
     val lineStart = box.left + (width.toPx() / 2)
     val lineEnd = box.right - (width.toPx() / 2)
-    val lineBaseline = box.bottom + baselineOffset.toPx()
+    val lineBottom = box.bottom + bottomOffset.toPx()
 
-    val segmentWidth = wavePeriod.toPx() / SEGMENTS_PER_WAVE_PERIOD
+    val segmentWidth = wavelength.toPx() / SEGMENTS_PER_WAVELENGTH
     val amountPoints = ceil((lineEnd - lineStart) / segmentWidth).toInt() + 1
 
     var pointX = lineStart
     fastMapRange(0, amountPoints) { point ->
-      val proportionOfPeriod = (pointX - lineStart) / wavePeriod.toPx()
-      val radiansX = proportionOfPeriod * TWO_PI + (TWO_PI * animator.animationProgress.value)
-      val offsetY = lineBaseline + (sin(radiansX) * amplitude.toPx())
+      val proportionOfWavelength = (pointX - lineStart) / wavelength.toPx()
+      val radiansX = proportionOfWavelength * TWO_PI + (TWO_PI * animator.animationProgress.value)
+      val offsetY = lineBottom + (sin(radiansX) * amplitude.toPx())
 
       when (point) {
         0 -> moveTo(pointX, offsetY)
@@ -118,7 +155,7 @@ class SquigglyUnderlineSpanPainter(
 
   companion object {
     private const val TAG = "squiggly_underline_span"
-    private const val SEGMENTS_PER_WAVE_PERIOD = 10
+    private const val SEGMENTS_PER_WAVELENGTH = 10
     private const val TWO_PI = 2 * Math.PI.toFloat()
   }
 }

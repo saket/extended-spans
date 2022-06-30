@@ -26,7 +26,7 @@ class ExtendedSpans(
 
       text.spanStyles.fastForEach {
         val decorated = painters.fastFold(initial = it.item) { updated, painter ->
-          painter.decorate(updated, it.start, it.end, text = this)
+          painter.decorate(updated, it.start, it.end, text = text, builder = this)
         }
         addStyle(decorated, it.start, it.end)
       }

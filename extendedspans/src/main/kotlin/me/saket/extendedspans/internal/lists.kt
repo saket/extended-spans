@@ -15,6 +15,18 @@ internal inline fun <T> List<T>.fastForEach(action: (T) -> Unit) {
   }
 }
 
+@OptIn(ExperimentalContracts::class)
+internal inline fun <T> List<T>.fastFirstOrNull(predicate: (T) -> Boolean): T? {
+  contract { callsInPlace(predicate) }
+  for (index in indices) {
+    val item = get(index)
+    if (predicate(item)) {
+      return item
+    }
+  }
+  return null
+}
+
 /**
  * Copied from [androidx](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:text/text/src/main/java/androidx/compose/ui/text/android/TempListUtils.kt;l=50;drc=b2e3d878411b7fb1147455b1a204cddb7bee1a1b).
  */

@@ -3,7 +3,6 @@ package me.saket.extendedspans.sample
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -69,7 +68,12 @@ fun ExtendedSpansPreview() {
         modifier = Modifier.padding(top = 32.dp),
         text = buildAnnotatedString {
           append("And life will always be ")
-          withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) {
+          withStyle(
+            SpanStyle(
+              textDecoration = TextDecoration.Underline,
+              color = MaterialTheme.colorScheme.error
+            )
+          ) {
             append("la vie en rose")
           }
         }
@@ -96,11 +100,10 @@ fun ExtendedSpansText(
         ),
       ),
       SquigglyUnderlineSpanPainter(
-        color = Color.Yellow,
         width = 4.sp,
-        wavePeriod = 20.sp,
+        wavelength = 20.sp,
         amplitude = 2.sp,
-        baselineOffset = 2.sp,
+        bottomOffset = 2.sp,
         animator = underlineAnimator
       )
     )

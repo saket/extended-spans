@@ -48,6 +48,7 @@ fun ExtendedSpansText(
       fontSize = fontSize,
       fontFamily = fontFamily,
       lineHeight = 1.5.em,
+      color = Color.Black,
     )
   }
 }
