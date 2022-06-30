@@ -15,8 +15,11 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -26,14 +29,14 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ExtendedSpansText(
   text: AnnotatedString,
-  spanPainter: ExtendedSpanPainter,
+  spanPainter: List<ExtendedSpanPainter>,
   layoutDirection: LayoutDirection,
   modifier: Modifier = Modifier,
   fontSize: TextUnit = 32.sp,
   fontFamily: FontFamily? = null,
 ) {
   val extendedSpans = remember(spanPainter) {
-    ExtendedSpans(spanPainter)
+    ExtendedSpans(*spanPainter.toTypedArray())
   }
   CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
     Box(
@@ -63,3 +66,18 @@ fun ExtendedSpansText(
     }
   }
 }
+
+fun AnnotatedString.Builder.underlined(color: Color, block: AnnotatedString.Builder.() -> Unit) = apply {
+  withStyle(SpanStyle(textDecoration = TextDecoration.Underline, color = color), block)
+}
+
+fun AnnotatedString.Builder.colored(color: Color, block: AnnotatedString.Builder.() -> Unit) = apply {
+  withStyle(SpanStyle(color = color), block)
+}
+
+fun AnnotatedString.Builder.background(color: Color, block: AnnotatedString.Builder.() -> Unit) = apply {
+  withStyle(SpanStyle(background = color), block)
+}
+
+val Color.Companion.RosePink get() = Color(0xFFFF0080)
+val Color.Companion.SkyBlue get() = Color(0xFF7AD3EA)

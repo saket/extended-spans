@@ -4,11 +4,7 @@ package me.saket.extendedspans
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.sp
 import app.cash.paparazzi.DeviceConfig
@@ -31,12 +27,14 @@ class SquigglyUnderlineSpanPainterTest(
   )
 
   @Composable
-  private fun squigglyPainter() = SquigglyUnderlineSpanPainter(
-    width = 4.sp,
-    wavelength = 20.sp,
-    amplitude = 2.sp,
-    bottomOffset = 2.sp,
-    animator = SquigglyUnderlineAnimator.NoOp
+  private fun squigglyPainter() = listOf(
+    SquigglyUnderlineSpanPainter(
+      width = 4.sp,
+      wavelength = 20.sp,
+      amplitude = 2.sp,
+      bottomOffset = 2.sp,
+      animator = SquigglyUnderlineAnimator.NoOp
+    )
   )
 
   @Test fun `single line`() {
@@ -88,14 +86,4 @@ class SquigglyUnderlineSpanPainterTest(
       )
     }
   }
-
-  private fun AnnotatedString.Builder.underlined(color: Color, block: AnnotatedString.Builder.() -> Unit) = apply {
-    withStyle(SpanStyle(textDecoration = Underline, color = color), block)
-  }
-
-  private fun AnnotatedString.Builder.colored(color: Color, block: AnnotatedString.Builder.() -> Unit) = apply {
-    withStyle(SpanStyle(color = color), block)
-  }
 }
-
-private val Color.Companion.RosePink get() = Color(0xFFFF0080)

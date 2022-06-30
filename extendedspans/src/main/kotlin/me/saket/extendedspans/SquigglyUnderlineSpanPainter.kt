@@ -124,7 +124,7 @@ class SquigglyUnderlineSpanPainter(
   }
 
   /**
-   * Inspired from [squigglyspans](https://github.com/samruston/squigglyspans).
+   * Maths copied from [squigglyspans](https://github.com/samruston/squigglyspans).
    */
   private fun Path.buildPathFor(box: Rect, density: Density) = density.run {
     val lineStart = box.left + (width.toPx() / 2)
