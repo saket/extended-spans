@@ -45,7 +45,7 @@ class RoundRectSpanPainterTest {
         spanPainter = roundRectPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
-          background {
+          background(Color.SkyBlue) {
             append("ipsum dolor")
           }
           append(" sit amet, consectetur adipiscing elit, sed do eiusmod tempor.")
@@ -60,7 +60,7 @@ class RoundRectSpanPainterTest {
         spanPainter = roundRectPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
-          background {
+          background(Color.SkyBlue) {
             append("ipsum dolor sit amet,")
           }
           append(" consectetur adipiscing elit, sed do eiusmod tempor.")
@@ -75,7 +75,7 @@ class RoundRectSpanPainterTest {
         spanPainter = roundRectPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
-          background {
+          background(Color.SkyBlue) {
             append("ipsum dolor sit amet, consectetur adipiscing")
           }
           append(" elit, sed do eiusmod tempor.")
@@ -91,7 +91,7 @@ class RoundRectSpanPainterTest {
         fontSize = 20.sp,
         fontFamily = FontFamily(Typeface(android.graphics.Typeface.MONOSPACE)),
         text = buildAnnotatedString {
-          background {
+          background(Color.SkyBlue) {
             append(
               """
                 |@Composable
@@ -106,7 +106,9 @@ class RoundRectSpanPainterTest {
     }
   }
 
-  private fun AnnotatedString.Builder.background(block: AnnotatedString.Builder.() -> Unit) = apply {
-    withStyle(SpanStyle(background = Color(0xFF7AD3EA)), block)
+  private fun AnnotatedString.Builder.background(color: Color, block: AnnotatedString.Builder.() -> Unit) = apply {
+    withStyle(SpanStyle(background = color), block)
   }
 }
+
+private val Color.Companion.SkyBlue get() = Color(0xFF7AD3EA)

@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.isSpecified
-import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
@@ -43,7 +42,7 @@ import kotlin.time.Duration.Companion.seconds
 
 /**
  * Draws squiggly underlines below text annotated using `SpanStyle(textDecoration = Underline)`.
- * Inspired from Sam Ruston's BuzzKill app.
+ * Inspired from [Sam Ruston's BuzzKill app](https://twitter.com/saketme/status/1310073763019530242).
  *
  * ```
  *
@@ -59,12 +58,10 @@ import kotlin.time.Duration.Companion.seconds
  *
  * ```
  *
- * @param overrideColor Color to use for drawing underlines. When unspecified, the text color is used.
  * @param animator See [rememberSquigglyUnderlineAnimator].
  * @param bottomOffset Distance from a line's bottom coordinate.
  */
 class SquigglyUnderlineSpanPainter(
-  private val overrideColor: Color = Color.Unspecified,
   private val width: TextUnit = 2.sp,
   private val wavelength: TextUnit = 9.sp,
   private val amplitude: TextUnit = 1.sp,
@@ -84,13 +81,12 @@ class SquigglyUnderlineSpanPainter(
     return if (textDecoration == null || Underline !in textDecoration) {
       span
     } else {
-      val textColor = overrideColor.takeOrElse {
-        text.spanStyles.fastFirstOrNull {
-          // I don't think this predicate will work for text annotated with overlapping
-          // multiple colors, but I'm not too interested in solving for that use case.
-          it.start <= start && it.end >= end && it.item.color.isSpecified
-        }?.item?.color ?: Color.Unspecified
-      }
+      val textColor = text.spanStyles.fastFirstOrNull {
+        // I don't think this predicate will work for text annotated with overlapping
+        // multiple colors, but I'm not too interested in solving for that use case.
+        it.start <= start && it.end >= end && it.item.color.isSpecified
+      }?.item?.color ?: Color.Unspecified
+
       builder.addStringAnnotation(TAG, annotation = textColor.serialize(), start = start, end = end)
       span.copy(textDecoration = if (LineThrough in textDecoration) LineThrough else None)
     }

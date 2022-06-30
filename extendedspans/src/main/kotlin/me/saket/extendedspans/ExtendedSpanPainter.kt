@@ -72,7 +72,6 @@ abstract class ExtendedSpanPainter {
       )
     }
   }
-
 }
 
 fun interface SpanDrawInstructions {
