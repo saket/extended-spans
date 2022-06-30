@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.style.ResolvedTextDirection.Ltr
 import me.saket.extendedspans.internal.fastMapRange
 
 abstract class ExtendedSpanPainter {
@@ -55,17 +56,22 @@ abstract class ExtendedSpanPainter {
       }
     }
 
+    // Compose UI does not offer any API for reading paragraph direction for an entire line.
+    // So this code assumes that all paragraphs in the text will have the same direction.
+    // It also assumes that this paragraph does not contain bi-directional text.
+    val isLtr = multiParagraph.getParagraphDirection(offset = layoutInput.text.lastIndex) == Ltr
+
     return fastMapRange(startLineNum, endLineNum) { lineNum ->
       Rect(
         top = getLineTop(lineNum),
         bottom = getLineBottom(lineNum),
         left = if (lineNum == startLineNum) {
-          getHorizontalPosition(startOffset, usePrimaryDirection = true)
+          getHorizontalPosition(startOffset, usePrimaryDirection = isLtr)
         } else {
           getLineLeft(lineNum)
         },
         right = if (lineNum == endLineNum) {
-          getHorizontalPosition(endOffset, usePrimaryDirection = true)
+          getHorizontalPosition(endOffset, usePrimaryDirection = isLtr)
         } else {
           getLineRight(lineNum)
         }

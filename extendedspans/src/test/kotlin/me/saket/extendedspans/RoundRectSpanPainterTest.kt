@@ -11,15 +11,22 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.ide.common.rendering.api.SessionParams
+import com.squareup.burst.BurstJUnit4
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
-class RoundRectSpanPainterTest {
+@RunWith(BurstJUnit4::class)
+class RoundRectSpanPainterTest(
+  private val layoutDirection: LayoutDirection
+) {
+
   @get:Rule val paparazzi = Paparazzi(
     theme = "Theme.NoTitleBar.Fullscreen",
     deviceConfig = DeviceConfig.PIXEL_5.copy(softButtons = false, screenHeight = 0),
@@ -42,14 +49,15 @@ class RoundRectSpanPainterTest {
   @Test fun `single line`() {
     paparazzi.snapshot {
       ExtendedSpansText(
-        spanPainter = roundRectPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
           background(Color.SkyBlue) {
             append("ipsum dolor")
           }
           append(" sit amet, consectetur adipiscing elit, sed do eiusmod tempor.")
-        }
+        },
+        spanPainter = roundRectPainter(),
+        layoutDirection = layoutDirection,
       )
     }
   }
@@ -57,14 +65,15 @@ class RoundRectSpanPainterTest {
   @Test fun `two lines`() {
     paparazzi.snapshot {
       ExtendedSpansText(
-        spanPainter = roundRectPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
           background(Color.SkyBlue) {
             append("ipsum dolor sit amet,")
           }
           append(" consectetur adipiscing elit, sed do eiusmod tempor.")
-        }
+        },
+        spanPainter = roundRectPainter(),
+        layoutDirection = layoutDirection,
       )
     }
   }
@@ -72,14 +81,15 @@ class RoundRectSpanPainterTest {
   @Test fun `more than two lines`() {
     paparazzi.snapshot {
       ExtendedSpansText(
-        spanPainter = roundRectPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
           background(Color.SkyBlue) {
             append("ipsum dolor sit amet, consectetur adipiscing")
           }
           append(" elit, sed do eiusmod tempor.")
-        }
+        },
+        spanPainter = roundRectPainter(),
+        layoutDirection = layoutDirection,
       )
     }
   }
@@ -87,9 +97,6 @@ class RoundRectSpanPainterTest {
   @Test fun paragraph() {
     paparazzi.snapshot {
       ExtendedSpansText(
-        spanPainter = roundRectPainter(padding = PaddingValues(8.dp)),
-        fontSize = 20.sp,
-        fontFamily = FontFamily(Typeface(android.graphics.Typeface.MONOSPACE)),
         text = buildAnnotatedString {
           background(Color.SkyBlue) {
             append(
@@ -101,7 +108,11 @@ class RoundRectSpanPainterTest {
                 """.trimMargin()
             )
           }
-        }
+        },
+        spanPainter = roundRectPainter(padding = PaddingValues(8.dp)),
+        fontSize = 20.sp,
+        fontFamily = FontFamily(Typeface(android.graphics.Typeface.MONOSPACE)),
+        layoutDirection = layoutDirection,
       )
     }
   }

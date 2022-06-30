@@ -9,14 +9,21 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.sp
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
+import com.squareup.burst.BurstJUnit4
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
-class SquigglyUnderlineSpanPainterTest {
+@RunWith(BurstJUnit4::class)
+class SquigglyUnderlineSpanPainterTest(
+  private val layoutDirection: LayoutDirection
+) {
+
   @get:Rule val paparazzi = Paparazzi(
     theme = "Theme.NoTitleBar.Fullscreen",
     deviceConfig = DeviceConfig.PIXEL_5.copy(softButtons = false, screenHeight = 0),
@@ -35,7 +42,6 @@ class SquigglyUnderlineSpanPainterTest {
   @Test fun `single line`() {
     paparazzi.snapshot {
       ExtendedSpansText(
-        spanPainter = squigglyPainter(),
         text = buildAnnotatedString {
           colored(Color.DarkGray) {
             append("Lorem ")
@@ -44,7 +50,9 @@ class SquigglyUnderlineSpanPainterTest {
             append("ipsum dolor")
           }
           append(" sit amet, consectetur adipiscing elit, sed do eiusmod tempor.")
-        }
+        },
+        spanPainter = squigglyPainter(),
+        layoutDirection = layoutDirection,
       )
     }
   }
@@ -52,14 +60,15 @@ class SquigglyUnderlineSpanPainterTest {
   @Test fun `two lines`() {
     paparazzi.snapshot {
       ExtendedSpansText(
-        spanPainter = squigglyPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
           underlined(Color.RosePink) {
             append("ipsum dolor sit amet,")
           }
           append(" consectetur adipiscing elit, sed do eiusmod tempor.")
-        }
+        },
+        spanPainter = squigglyPainter(),
+        layoutDirection = layoutDirection,
       )
     }
   }
@@ -67,14 +76,15 @@ class SquigglyUnderlineSpanPainterTest {
   @Test fun `more than two lines`() {
     paparazzi.snapshot {
       ExtendedSpansText(
-        spanPainter = squigglyPainter(),
         text = buildAnnotatedString {
           append("Lorem ")
           underlined(Color.RosePink) {
             append("ipsum dolor sit amet, consectetur adipiscing")
           }
           append(" elit, sed do eiusmod tempor.")
-        }
+        },
+        spanPainter = squigglyPainter(),
+        layoutDirection = layoutDirection,
       )
     }
   }

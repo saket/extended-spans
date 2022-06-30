@@ -34,5 +34,5 @@ dependencies {
   implementation "androidx.compose.foundation:foundation:$versions.composeUi"
 
   testImplementation "junit:junit:4.13.2"
-  testImplementation "androidx.compose.material3:material3:1.0.0-alpha13"
+  testImplementation "com.squareup.burst:burst-junit4:1.2.0"
 }
