@@ -5,12 +5,9 @@ package me.saket.extendedspans
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Typeface
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,14 +33,16 @@ class RoundRectSpanPainterTest(
   @Composable
   private fun roundRectPainter(
     padding: PaddingValues = PaddingValues(horizontal = 4.dp)
-  ) = RoundRectSpanPainter(
-    cornerRadius = 4.dp,
-    padding = padding,
-    topMargin = 4.dp,
-    bottomMargin = 2.dp,
-    stroke = RoundRectSpanPainter.Stroke(
-      color = Color.Black.copy(alpha = 0.2f)
-    ),
+  ) = listOf(
+    RoundRectSpanPainter(
+      cornerRadius = 4.dp,
+      padding = padding,
+      topMargin = 4.dp,
+      bottomMargin = 2.dp,
+      stroke = RoundRectSpanPainter.Stroke(
+        color = Color.Black.copy(alpha = 0.2f)
+      ),
+    )
   )
 
   @Test fun `single line`() {
@@ -116,10 +115,5 @@ class RoundRectSpanPainterTest(
       )
     }
   }
-
-  private fun AnnotatedString.Builder.background(color: Color, block: AnnotatedString.Builder.() -> Unit) = apply {
-    withStyle(SpanStyle(background = color), block)
-  }
 }
 
-private val Color.Companion.SkyBlue get() = Color(0xFF7AD3EA)
