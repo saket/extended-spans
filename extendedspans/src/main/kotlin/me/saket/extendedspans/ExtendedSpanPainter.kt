@@ -35,13 +35,17 @@ abstract class ExtendedSpanPainter {
     endOffset: Int,
     flattenForFullParagraph: Boolean = false
   ): List<Rect> {
+    if (startOffset == endOffset) {
+      return emptyList()
+    }
+
     val startLineNum = getLineForOffset(startOffset)
     val endLineNum = getLineForOffset(endOffset)
 
     if (flattenForFullParagraph) {
       val isFullParagraph = (startLineNum != endLineNum)
         && getLineStart(startLineNum) == startOffset
-        && getLineEnd(endLineNum) == endOffset
+        && multiParagraph.getLineEnd(endLineNum, visibleEnd = true) == endOffset
 
       if (isFullParagraph) {
         return listOf(
@@ -61,20 +65,20 @@ abstract class ExtendedSpanPainter {
     val isLtr = multiParagraph.getParagraphDirection(offset = layoutInput.text.lastIndex) == Ltr
 
     return fastMapRange(startLineNum, endLineNum) { lineNum ->
-      Rect(
-        top = getLineTop(lineNum),
-        bottom = getLineBottom(lineNum),
-        left = if (lineNum == startLineNum) {
-          getHorizontalPosition(startOffset, usePrimaryDirection = isLtr)
-        } else {
-          getLineLeft(lineNum)
-        },
-        right = if (lineNum == endLineNum) {
-          getHorizontalPosition(endOffset, usePrimaryDirection = isLtr)
-        } else {
-          getLineRight(lineNum)
-        }
-      )
+        Rect(
+          top = getLineTop(lineNum),
+          bottom = getLineBottom(lineNum),
+          left = if (lineNum == startLineNum) {
+            getHorizontalPosition(startOffset, usePrimaryDirection = isLtr)
+          } else {
+            getLineLeft(lineNum)
+          },
+          right = if (lineNum == endLineNum) {
+            getHorizontalPosition(endOffset, usePrimaryDirection = isLtr)
+          } else {
+            getLineRight(lineNum)
+          }
+        )
     }
   }
 }
