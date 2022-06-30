@@ -21,15 +21,15 @@ import me.saket.extendedspans.internal.fastForEach
  * Draws rectangle spans with rounded corners.
  *
  * [topMargin] and [bottomMargin] are placeholder values that will be automatically calculated from font metrics
- * in the future once Compose UI starts exposing them ([Issue tracker](https://issuetracker.google.com/issues/173648606)).
+ * in the future once Compose UI starts exposing them ([Issue tracker](https://issuetracker.google.com/u/1/issues/237428541)).
  * In the meantime, you can calculate these depending upon your text's font size and line height.
  */
 class RoundRectSpanPainter(
   private val cornerRadius: Dp = 8.dp,
   private val stroke: Stroke? = null,
   private val padding: PaddingValues = PaddingValues(2.dp),
-  private val topMargin: Dp = 0.dp,
-  private val bottomMargin: Dp = 0.dp,
+  private val topMargin: Dp,
+  private val bottomMargin: Dp,
 ) : ExtendedSpanPainter() {
   private val path = Path()
 
