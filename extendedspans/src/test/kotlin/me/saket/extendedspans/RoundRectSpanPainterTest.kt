@@ -2,19 +2,18 @@
 
 package me.saket.extendedspans
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.ide.common.rendering.api.SessionParams
 import com.squareup.burst.BurstJUnit4
+import me.saket.extendedspans.RoundRectSpanPainter.TextPaddingValues
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,13 +31,13 @@ class RoundRectSpanPainterTest(
 
   @Composable
   private fun roundRectPainter(
-    padding: PaddingValues = PaddingValues(horizontal = 4.dp)
+    padding: TextPaddingValues = TextPaddingValues(horizontal = 4.sp)
   ) = listOf(
     RoundRectSpanPainter(
-      cornerRadius = 4.dp,
+      cornerRadius = 4.sp,
       padding = padding,
-      topMargin = 4.dp,
-      bottomMargin = 2.dp,
+      topMargin = 4.sp,
+      bottomMargin = 2.sp,
       stroke = RoundRectSpanPainter.Stroke(
         color = Color.Black.copy(alpha = 0.2f)
       ),
@@ -104,11 +103,16 @@ class RoundRectSpanPainterTest(
                 |fun Greeting() {
                 |  Text("Hello world")
                 |}
+                |
+                |@Composable
+                |fun AnotherFunction() {
+                |  Text("This should also be included")
+                |}
                 """.trimMargin()
             )
           }
         },
-        spanPainter = roundRectPainter(padding = PaddingValues(8.dp)),
+        spanPainter = roundRectPainter(padding = TextPaddingValues(8.sp)),
         fontSize = 20.sp,
         fontFamily = FontFamily(Typeface(android.graphics.Typeface.MONOSPACE)),
         layoutDirection = layoutDirection,
@@ -116,4 +120,3 @@ class RoundRectSpanPainterTest(
     }
   }
 }
-

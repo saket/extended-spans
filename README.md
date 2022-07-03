@@ -1,5 +1,36 @@
 # Extended Spans
 
+`ExtendedSpans` converts your boring `AnnotatedString` spans into rad spans.
+
+| Before | After |
+| --- | --- |
+| ![Boring spans](sample/screenshots/before_light.jpg#gh-light-mode-only)![Boring spans](sample/screenshots/before_dark.jpg#gh-dark-mode-only) | ![Rad spans](sample/screenshots/after_light.gif#gh-light-mode-only)![Rad spans](sample/screenshots/after_dark.gif#gh-dark-mode-only) |
+
+
+```groovy
+implementation "me.saket.extendedspans:extendedspans:1.0.0"
+```
+
+```kotlin
+val extendedSpans = remember {
+  ExtendedSpans(
+    RoundRectSpanPainter(…),
+    SquigglyUnderlineSpanPainter(…)
+  )
+}
+
+Text(
+  modifier = Modifier.drawBehind(extendedSpans),
+  text = remember(text) {
+    extendedSpans.extend(text)
+  },
+  onTextLayout = { result ->
+    extendedSpans.onTextLayout(result)
+  }
+)
+```
+
+You can also create your own custom spans by extending `ExtendedSpanPainter` and passing it to `ExtendedSpans`.
 
 ## License
 

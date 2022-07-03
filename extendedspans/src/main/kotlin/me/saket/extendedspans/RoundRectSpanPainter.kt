@@ -1,8 +1,5 @@
 package me.saket.extendedspans
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
@@ -13,8 +10,8 @@ import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import me.saket.extendedspans.internal.deserializeToColor
 import me.saket.extendedspans.internal.fastForEach
 import me.saket.extendedspans.internal.serialize
@@ -27,11 +24,11 @@ import me.saket.extendedspans.internal.serialize
  * In the meantime, you can calculate these depending upon your text's font size and line height.
  */
 class RoundRectSpanPainter(
-  private val cornerRadius: Dp = 8.dp,
+  private val cornerRadius: TextUnit = 8.sp,
   private val stroke: Stroke? = null,
-  private val padding: PaddingValues = PaddingValues(2.dp),
-  private val topMargin: Dp,
-  private val bottomMargin: Dp,
+  private val padding: TextPaddingValues = TextPaddingValues(horizontal = 2.sp, vertical = 2.sp),
+  private val topMargin: TextUnit,
+  private val bottomMargin: TextUnit,
 ) : ExtendedSpanPainter() {
   private val path = Path()
 
@@ -62,17 +59,17 @@ class RoundRectSpanPainter(
         val boxes = layoutResult.getBoundingBoxes(
           startOffset = annotation.start,
           endOffset = annotation.end,
-          flattenForFullParagraph = true
+          flattenForFullParagraphs = true
         )
         boxes.forEachIndexed { index, box ->
           path.reset()
           path.addRoundRect(
             RoundRect(
               rect = box.copy(
-                left = box.left - padding.calculateStartPadding(this.layoutDirection).toPx(),
-                right = box.right + padding.calculateEndPadding(this.layoutDirection).toPx(),
-                top = box.top - padding.calculateTopPadding().toPx() + topMargin.toPx(),
-                bottom = box.bottom + padding.calculateBottomPadding().toPx() - bottomMargin.toPx(),
+                left = box.left - padding.horizontal.toPx(),
+                right = box.right + padding.horizontal.toPx(),
+                top = box.top - padding.vertical.toPx() + topMargin.toPx(),
+                bottom = box.bottom + padding.vertical.toPx() - bottomMargin.toPx(),
               ),
               topLeft = if (index == 0) cornerRadius else CornerRadius.Zero,
               bottomLeft = if (index == 0) cornerRadius else CornerRadius.Zero,
@@ -101,13 +98,18 @@ class RoundRectSpanPainter(
 
   data class Stroke(
     val color: (background: Color) -> Color,
-    val width: Dp = 1.dp
+    val width: TextUnit = 1.sp
   ) {
-    constructor(color: Color, width: Dp = 1.dp) : this(
+    constructor(color: Color, width: TextUnit = 1.sp) : this(
       color = { color },
       width = width
     )
   }
+
+  data class TextPaddingValues(
+    val horizontal: TextUnit = 0.sp,
+    val vertical: TextUnit = 0.sp
+  )
 
   companion object {
     private const val TAG = "rounded_corner_span"

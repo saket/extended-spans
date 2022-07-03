@@ -1,15 +1,14 @@
 package me.saket.extendedspans
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import com.squareup.burst.BurstJUnit4
+import me.saket.extendedspans.RoundRectSpanPainter.TextPaddingValues
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,10 +35,10 @@ class AllSpanPaintersTest(
           animator = SquigglyUnderlineAnimator.NoOp
         ),
         RoundRectSpanPainter(
-          cornerRadius = 4.dp,
-          padding = PaddingValues(horizontal = 4.dp),
-          topMargin = 4.dp,
-          bottomMargin = 2.dp,
+          cornerRadius = 4.sp,
+          padding = TextPaddingValues(horizontal = 4.sp),
+          topMargin = 4.sp,
+          bottomMargin = 2.sp,
           stroke = RoundRectSpanPainter.Stroke(
             color = Color.Black.copy(alpha = 0.2f)
           ),

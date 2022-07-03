@@ -9,9 +9,8 @@ import androidx.compose.ui.text.style.ResolvedTextDirection.Ltr
 import me.saket.extendedspans.internal.fastMapRange
 
 abstract class ExtendedSpanPainter {
-
   /**
-   * Used for removing any existing spans from [text] so that they can be drawn manually.
+   * Can be used for removing any existing spans from [text] so that they can be drawn manually.
    */
   abstract fun decorate(
     span: SpanStyle,
@@ -26,14 +25,17 @@ abstract class ExtendedSpanPainter {
   ): SpanDrawInstructions
 
   /**
-   * When [flattenForFullParagraph] is available, the bounds for the
-   * entire paragraph is returned instead of separate lines if [startOffset]
-   * and [endOffset] represent the extreme ends of a paragraph.
+   * Reads bounds for multiple lines. This can be removed once an
+   * [official API](https://issuetracker.google.com/u/1/issues/237289433) is released.
+   *
+   * When [flattenForFullParagraphs] is available, the bounds for one or multiple
+   * entire paragraphs is returned instead of separate lines if [startOffset]
+   * and [endOffset] represent the extreme ends of those paragraph.
    */
   protected fun TextLayoutResult.getBoundingBoxes(
     startOffset: Int,
     endOffset: Int,
-    flattenForFullParagraph: Boolean = false
+    flattenForFullParagraphs: Boolean = false
   ): List<Rect> {
     if (startOffset == endOffset) {
       return emptyList()
@@ -42,7 +44,7 @@ abstract class ExtendedSpanPainter {
     val startLineNum = getLineForOffset(startOffset)
     val endLineNum = getLineForOffset(endOffset)
 
-    if (flattenForFullParagraph) {
+    if (flattenForFullParagraphs) {
       val isFullParagraph = (startLineNum != endLineNum)
         && getLineStart(startLineNum) == startOffset
         && multiParagraph.getLineEnd(endLineNum, visibleEnd = true) == endOffset

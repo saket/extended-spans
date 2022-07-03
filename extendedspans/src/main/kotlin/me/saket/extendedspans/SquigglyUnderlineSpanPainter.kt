@@ -54,7 +54,7 @@ import kotlin.time.Duration.Companion.seconds
  *                       ".               ."
  *                         "._         _,"
  *                            "-.....-"
- *◀───────── Wavelength ─────────▶
+ *◀─────────────── Wavelength ──────────────▶
  *
  * ```
  *
@@ -112,7 +112,7 @@ class SquigglyUnderlineSpanPainter(
         val textColor = annotation.item.deserializeToColor() ?: layoutResult.layoutInput.style.color
         boxes.fastForEach { box ->
           path.reset()
-          path.buildPathFor(box, density = this)
+          path.buildSquigglesFor(box, density = this)
           drawPath(
             path = path,
             color = textColor,
@@ -126,16 +126,16 @@ class SquigglyUnderlineSpanPainter(
   /**
    * Maths copied from [squigglyspans](https://github.com/samruston/squigglyspans).
    */
-  private fun Path.buildPathFor(box: Rect, density: Density) = density.run {
+  private fun Path.buildSquigglesFor(box: Rect, density: Density) = density.run {
     val lineStart = box.left + (width.toPx() / 2)
     val lineEnd = box.right - (width.toPx() / 2)
     val lineBottom = box.bottom + bottomOffset.toPx()
 
     val segmentWidth = wavelength.toPx() / SEGMENTS_PER_WAVELENGTH
-    val amountPoints = ceil((lineEnd - lineStart) / segmentWidth).toInt() + 1
+    val numOfPoints = ceil((lineEnd - lineStart) / segmentWidth).toInt() + 1
 
     var pointX = lineStart
-    fastMapRange(0, amountPoints) { point ->
+    fastMapRange(0, numOfPoints) { point ->
       val proportionOfWavelength = (pointX - lineStart) / wavelength.toPx()
       val radiansX = proportionOfWavelength * TWO_PI + (TWO_PI * animator.animationProgress.value)
       val offsetY = lineBottom + (sin(radiansX) * amplitude.toPx())

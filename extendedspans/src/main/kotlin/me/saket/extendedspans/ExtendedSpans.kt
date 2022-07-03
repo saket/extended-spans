@@ -3,7 +3,8 @@
 package me.saket.extendedspans
 
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextLayoutResult
@@ -17,8 +18,12 @@ class ExtendedSpans(
   vararg painters: ExtendedSpanPainter
 ) {
   private val painters = painters.toList()
-  private var drawInstructions = emptyList<SpanDrawInstructions>()
+  internal var drawInstructions = emptyList<SpanDrawInstructions>()
 
+  /**
+   * Prepares [text] to be rendered by [painters]. [RoundRectSpanPainter] and [SquigglyUnderlineSpanPainter]
+   * use this for removing background and underline spans so that they can be drawn manually.
+   */
   fun extend(text: AnnotatedString): AnnotatedString {
     return buildAnnotatedString {
       append(text.text)
@@ -43,7 +48,14 @@ class ExtendedSpans(
   }
 
   fun onTextLayout(layoutResult: TextLayoutResult) {
-    val wasExtendCalled = layoutResult.layoutInput.text.getStringAnnotations(
+    layoutResult.checkIfExtendWasCalled()
+    drawInstructions = painters.fastMap {
+      it.drawInstructionsFor(layoutResult)
+    }
+  }
+
+  private fun TextLayoutResult.checkIfExtendWasCalled() {
+    val wasExtendCalled = layoutInput.text.getStringAnnotations(
       tag = EXTENDED_SPANS_MARKER_TAG,
       start = 0,
       end = 0
@@ -51,21 +63,19 @@ class ExtendedSpans(
     check(wasExtendCalled) {
       "ExtendedSpans#extend(AnnotatedString) wasn't called for this Text()."
     }
-
-    drawInstructions = painters.fastMap {
-      it.drawInstructionsFor(layoutResult)
-    }
-  }
-
-  fun draw(scope: DrawScope) {
-    drawInstructions.fastForEach { instructions ->
-      with(instructions) {
-        scope.draw()
-      }
-    }
   }
 
   companion object {
     private const val EXTENDED_SPANS_MARKER_TAG = "extended_spans_marker"
+  }
+}
+
+fun Modifier.drawBehind(spans: ExtendedSpans): Modifier {
+  return drawBehind {
+    spans.drawInstructions.fastForEach { instructions ->
+      with(instructions) {
+        draw()
+      }
+    }
   }
 }

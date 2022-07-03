@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.AnnotatedString
@@ -47,9 +46,7 @@ fun ExtendedSpansText(
       BasicText(
         modifier = Modifier
           .fillMaxWidth()
-          .drawBehind {
-            extendedSpans.draw(this)
-          },
+          .drawBehind(extendedSpans),
         text = remember(text) {
           extendedSpans.extend(text)
         },
