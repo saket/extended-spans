@@ -8,7 +8,7 @@
 
 
 ```groovy
-implementation "me.saket.extendedspans:extendedspans:1.0.0"
+implementation "me.saket.extendedspans:extendedspans:1.1.0"
 ```
 
 ```kotlin
