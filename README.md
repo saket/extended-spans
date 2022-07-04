@@ -14,7 +14,7 @@ implementation "me.saket.extendedspans:extendedspans:1.0.0"
 ```kotlin
 val extendedSpans = remember {
   ExtendedSpans(
-    RoundRectSpanPainter(…),
+    RoundedCornerSpanPainter(…),
     SquigglyUnderlineSpanPainter(…)
   )
 }

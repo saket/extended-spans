@@ -23,7 +23,7 @@ import me.saket.extendedspans.internal.serialize
  * in the future once Compose UI starts exposing them ([Issue tracker](https://issuetracker.google.com/u/1/issues/237428541)).
  * In the meantime, you can calculate these depending upon your text's font size and line height.
  */
-class RoundRectSpanPainter(
+class RoundedCornerSpanPainter(
   private val cornerRadius: TextUnit = 8.sp,
   private val stroke: Stroke? = null,
   private val padding: TextPaddingValues = TextPaddingValues(horizontal = 2.sp, vertical = 2.sp),

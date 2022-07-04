@@ -26,8 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.saket.extendedspans.ExtendedSpans
-import me.saket.extendedspans.RoundRectSpanPainter
-import me.saket.extendedspans.RoundRectSpanPainter.TextPaddingValues
+import me.saket.extendedspans.RoundedCornerSpanPainter
+import me.saket.extendedspans.RoundedCornerSpanPainter.TextPaddingValues
 import me.saket.extendedspans.SquigglyUnderlineSpanPainter
 import me.saket.extendedspans.drawBehind
 import me.saket.extendedspans.rememberSquigglyUnderlineAnimator
@@ -94,12 +94,12 @@ fun ExtendedSpansText(
   val underlineAnimator = rememberSquigglyUnderlineAnimator()
   val extendedSpans = remember {
     ExtendedSpans(
-      RoundRectSpanPainter(
+      RoundedCornerSpanPainter(
         cornerRadius = 8.sp,
         padding = TextPaddingValues(horizontal = 4.sp),
         topMargin = 2.sp,
         bottomMargin = 2.sp,
-        stroke = RoundRectSpanPainter.Stroke(
+        stroke = RoundedCornerSpanPainter.Stroke(
           color = Color(0xFFBF97FF).copy(alpha = 0.6f)
         ),
       ),

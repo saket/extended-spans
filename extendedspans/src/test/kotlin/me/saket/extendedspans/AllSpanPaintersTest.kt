@@ -8,7 +8,7 @@ import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import com.squareup.burst.BurstJUnit4
-import me.saket.extendedspans.RoundRectSpanPainter.TextPaddingValues
+import me.saket.extendedspans.RoundedCornerSpanPainter.TextPaddingValues
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,12 +34,12 @@ class AllSpanPaintersTest(
           bottomOffset = 2.sp,
           animator = SquigglyUnderlineAnimator.NoOp
         ),
-        RoundRectSpanPainter(
+        RoundedCornerSpanPainter(
           cornerRadius = 4.sp,
           padding = TextPaddingValues(horizontal = 4.sp),
           topMargin = 4.sp,
           bottomMargin = 2.sp,
-          stroke = RoundRectSpanPainter.Stroke(
+          stroke = RoundedCornerSpanPainter.Stroke(
             color = Color.Black.copy(alpha = 0.2f)
           ),
         )
