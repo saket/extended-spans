@@ -27,7 +27,10 @@ class ExtendedSpans(
   fun extend(text: AnnotatedString): AnnotatedString {
     return buildAnnotatedString {
       append(text.text)
-      addStringAnnotation(EXTENDED_SPANS_MARKER_TAG, annotation = "ignored", start = 0, end = 0)
+
+      // For onTextLayout to be called if a new instance of ExtendedSpans is applied with the same text.
+      val uniqueKey = this@ExtendedSpans.hashCode().toString()
+      addStringAnnotation(EXTENDED_SPANS_MARKER_TAG, annotation = uniqueKey, start = 0, end = 0)
 
       text.spanStyles.fastForEach {
         val decorated = painters.fastFold(initial = it.item) { updated, painter ->
