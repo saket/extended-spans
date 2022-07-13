@@ -13,14 +13,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StampedPathEffectStyle
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.asAndroidPath
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -28,15 +26,12 @@ import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.style.TextDecoration.Companion.LineThrough
 import androidx.compose.ui.text.style.TextDecoration.Companion.None
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import me.saket.extendedspans.internal.deserializeToColor
 import me.saket.extendedspans.internal.fastFirstOrNull
 import me.saket.extendedspans.internal.fastForEach
-import me.saket.extendedspans.internal.fastMapRange
 import me.saket.extendedspans.internal.serialize
-import kotlin.math.ceil
 import kotlin.math.sin
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -69,7 +64,6 @@ class SquigglyUnderlineSpanPainter(
   private val bottomOffset: TextUnit = 1.sp,
   private val animator: SquigglyUnderlineAnimator = SquigglyUnderlineAnimator.NoOp,
 ) : ExtendedSpanPainter() {
-  private val path = Path()
 
   override fun decorate(
     span: SpanStyle,
@@ -96,14 +90,12 @@ class SquigglyUnderlineSpanPainter(
   override fun drawInstructionsFor(layoutResult: TextLayoutResult): SpanDrawInstructions {
     val text = layoutResult.layoutInput.text
     val annotations = text.getStringAnnotations(TAG, start = 0, end = text.length)
+    var cachedSquiggle: Path? = null
 
     return SpanDrawInstructions {
-      val pathStyle = Stroke(
-        width = width.toPx(),
-        join = StrokeJoin.Round,
-        cap = StrokeCap.Round,
-        pathEffect = PathEffect.cornerPathEffect(radius = wavelength.toPx()), // For slightly smoother waves.
-      )
+      if (cachedSquiggle == null) {
+        cachedSquiggle = buildSquigglePath()
+      }
 
       annotations.fastForEach { annotation ->
         val boxes = layoutResult.getBoundingBoxes(
@@ -112,40 +104,40 @@ class SquigglyUnderlineSpanPainter(
         )
         val textColor = annotation.item.deserializeToColor() ?: layoutResult.layoutInput.style.color
         boxes.fastForEach { box ->
-          path.asAndroidPath().rewind()
-          path.buildSquigglesFor(box, density = this)
-          drawPath(
-            path = path,
+          drawLine(
             color = textColor,
-            style = pathStyle
+            start = box.bottomLeft,
+            end = box.bottomRight,
+            strokeWidth = 0f, // ignored
+            cap = StrokeCap.Round,
+            pathEffect = PathEffect.stampedPathEffect(
+              shape = cachedSquiggle!!,
+              phase = 0f,
+              advance = wavelength.toPx(),
+              style = StampedPathEffectStyle.Morph,
+            )
           )
         }
       }
     }
   }
 
-  /**
-   * Maths copied from [squigglyspans](https://github.com/samruston/squigglyspans).
-   */
-  private fun Path.buildSquigglesFor(box: Rect, density: Density) = density.run {
-    val lineStart = box.left + (width.toPx() / 2)
-    val lineEnd = box.right - (width.toPx() / 2)
-    val lineBottom = box.bottom + bottomOffset.toPx()
+  private fun DrawScope.buildSquigglePath(): Path {
+    val numOfPoints = SEGMENTS_PER_WAVELENGTH
+    var pointX = 0f
 
-    val segmentWidth = wavelength.toPx() / SEGMENTS_PER_WAVELENGTH
-    val numOfPoints = ceil((lineEnd - lineStart) / segmentWidth).toInt() + 1
+    return Path().apply {
+      (0..numOfPoints).map { point ->
+        val proportionOfWavelength = pointX / wavelength.toPx()
+        val radiansX = proportionOfWavelength * TWO_PI
+        val offsetY = sin(radiansX) * amplitude.toPx()
 
-    var pointX = lineStart
-    fastMapRange(0, numOfPoints) { point ->
-      val proportionOfWavelength = (pointX - lineStart) / wavelength.toPx()
-      val radiansX = proportionOfWavelength * TWO_PI + (TWO_PI * animator.animationProgress.value)
-      val offsetY = lineBottom + (sin(radiansX) * amplitude.toPx())
-
-      when (point) {
-        0 -> moveTo(pointX, offsetY)
-        else -> lineTo(pointX, offsetY)
+        when (point) {
+          0 -> moveTo(pointX, offsetY)
+          else -> lineTo(pointX, offsetY)
+        }
+        pointX += wavelength.toPx() / SEGMENTS_PER_WAVELENGTH
       }
-      pointX = (pointX + segmentWidth).coerceAtMost(lineEnd)
     }
   }
 

@@ -60,15 +60,15 @@ fun ExtendedSpansPreview() {
       modifier = Modifier.padding(24.dp),
       verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-      ExtendedSpansText(
-        text = buildAnnotatedString {
-          append("Give your ")
-          withStyle(SpanStyle(background = MaterialTheme.colorScheme.primaryContainer)) {
-            append("heart and soul")
-          }
-          append(" to me")
-        }
-      )
+      //ExtendedSpansText(
+      //  text = buildAnnotatedString {
+      //    append("Give your ")
+      //    withStyle(SpanStyle(background = MaterialTheme.colorScheme.primaryContainer)) {
+      //      append("heart and soul")
+      //    }
+      //    append(" to me")
+      //  }
+      //)
       ExtendedSpansText(
         text = buildAnnotatedString {
           append("And life will always be ")
@@ -106,7 +106,7 @@ fun ExtendedSpansText(
       SquigglyUnderlineSpanPainter(
         width = 4.sp,
         wavelength = 20.sp,
-        amplitude = 2.sp,
+        amplitude = 4.sp,
         bottomOffset = 2.sp,
         animator = underlineAnimator
       )
