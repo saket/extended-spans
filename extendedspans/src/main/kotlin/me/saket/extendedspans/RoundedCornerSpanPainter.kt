@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.isUnspecified
@@ -62,7 +63,7 @@ class RoundedCornerSpanPainter(
           flattenForFullParagraphs = true
         )
         boxes.forEachIndexed { index, box ->
-          path.reset()
+          path.asAndroidPath().rewind()
           path.addRoundRect(
             RoundRect(
               rect = box.copy(
