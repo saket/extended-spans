@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import me.saket.extendedspans.internal.deserializeToColor
 import me.saket.extendedspans.internal.fastForEach
+import me.saket.extendedspans.internal.fastForEachIndexed
 import me.saket.extendedspans.internal.serialize
 
 /**
@@ -62,7 +63,7 @@ class RoundedCornerSpanPainter(
           endOffset = annotation.end,
           flattenForFullParagraphs = true
         )
-        boxes.forEachIndexed { index, box ->
+        boxes.fastForEachIndexed { index, box ->
           path.asAndroidPath().rewind()
           path.addRoundRect(
             RoundRect(

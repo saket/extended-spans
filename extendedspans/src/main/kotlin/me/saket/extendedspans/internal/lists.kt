@@ -16,6 +16,15 @@ internal inline fun <T> List<T>.fastForEach(action: (T) -> Unit) {
 }
 
 @OptIn(ExperimentalContracts::class)
+internal inline fun <T> List<T>.fastForEachIndexed(action: (index: Int, T) -> Unit) {
+  contract { callsInPlace(action) }
+  for (index in indices) {
+    val item = get(index)
+    action(index, item)
+  }
+}
+
+@OptIn(ExperimentalContracts::class)
 internal inline fun <T> List<T>.fastFirstOrNull(predicate: (T) -> Boolean): T? {
   contract { callsInPlace(predicate) }
   for (index in indices) {
