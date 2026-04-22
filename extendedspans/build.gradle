@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 apply plugin: 'com.vanniktech.maven.publish'
 apply plugin: 'app.cash.paparazzi'
 
@@ -7,14 +8,11 @@ android {
   resourcePrefix "extendedspans_"
   namespace "me.saket.extendedspans"
 
-  compileSdkVersion versions.compileSdk
-  defaultConfig.minSdkVersion 21
+  compileSdk versions.compileSdk
+  defaultConfig.minSdk 21
 
   buildFeatures {
     compose = true
-  }
-  composeOptions {
-    kotlinCompilerExtensionVersion = versions.composeCompiler
   }
   kotlinOptions {
     jvmTarget = "11"

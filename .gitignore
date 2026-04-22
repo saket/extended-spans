@@ -34,3 +34,7 @@ captures/
 .DS_Store
 *~
 *.swp
+
+# AI
+.codex
+.claude
